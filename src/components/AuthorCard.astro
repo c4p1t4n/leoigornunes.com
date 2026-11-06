@@ -1,0 +1,36 @@
+---
+import { site, socialLinks } from '../config/site';
+---
+
+<section class="author" aria-labelledby="autor-titulo">
+  <h2 id="autor-titulo" class="section-label">
+    Sobre o autor
+  </h2>
+  <p class="name">{site.author.name}</p>
+  <p class="bio">{site.author.bio}</p>
+  <p class="row links">
+    <a href="/sobre/">Sobre</a>
+    {socialLinks.map((l) => (
+      <a href={l.href} target="_blank" rel="noopener noreferrer">
+        {l.label}
+      </a>
+    ))}
+    <a href="/rss.xml">RSS</a>
+  </p>
+</section>
+
+<style>
+  .name {
+    margin: 0 0 0.25rem;
+    font: 700 1.125rem var(--font-display);
+  }
+  .bio {
+    margin: 0 0 0.75rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  .links {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+</style>

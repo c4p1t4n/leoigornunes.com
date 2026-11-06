@@ -1,0 +1,58 @@
+---
+import { dateShort, isoDate } from '../lib/format';
+import { kicker, type Post } from '../lib/posts';
+import { tagLabel } from '../lib/tags';
+
+const { posts } = Astro.props as { posts: Post[] };
+---
+
+{posts.length > 0 && (
+  <section aria-labelledby="relacionados-titulo">
+    <h2 id="relacionados-titulo" class="section-label">
+      Leia também
+    </h2>
+    <ul>
+      {posts.map((p) => (
+        <li>
+          <a class="kicker" href={`/tags/${kicker(p)}/`}>
+            {tagLabel(kicker(p))}
+          </a>
+          <a class="title" href={`/artigos/${p.id}/`}>
+            {p.data.title}
+          </a>
+          <time class="meta" datetime={isoDate(p.data.date)}>
+            {dateShort(p.data.date)}
+          </time>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  ul {
+    display: grid;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 700px) {
+    ul {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .title {
+    color: var(--ink);
+    font: 700 1.125rem/1.4 var(--font-display); /* >= 24px de altura (alvo de toque) */
+    text-decoration: none;
+  }
+  .title:hover {
+    text-decoration: underline;
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+// Manchete da home: kicker, título grande, linha fina, meta e capa 16:9 opcional.
+import { Image } from 'astro:assets';
+import { dateLong, isoDate } from '../lib/format';
+import { kicker, readingTime, type Post } from '../lib/posts';
+import { tagLabel } from '../lib/tags';
+
+const { post } = Astro.props as { post: Post };
+const { title, description, date, cover, coverAlt, draft } = post.data;
+const href = `/artigos/${post.id}/`;
+---
+
+<article class="hero">
+  <a class="kicker" href={`/tags/${kicker(post)}/`}>
+    {tagLabel(kicker(post))}
+  </a>
+  <h2>
+    <a href={href}>{title}</a>
+  </h2>
+  <p class="lede">{description}</p>
+  <p class="meta meta-line">
+    <time datetime={isoDate(date)}>{dateLong(date)}</time>
+    <span>{readingTime(post)} min de leitura</span>
+    {draft && <span class="badge">Rascunho</span>}
+  </p>
+  {cover && (
+    <a href={href} class="cover" tabindex="-1" aria-hidden="true">
+      <Image
+        src={cover}
+        alt={coverAlt ?? ''}
+        widths={[480, 800, 1100]}
+        sizes="(min-width: 900px) 66vw, 100vw"
+        loading="eager"
+      />
+    </a>
+  )}
+</article>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  h2 {
+    margin: 0;
+    font: 900 var(--fs-headline) / 1.08 var(--font-display);
+  }
+  h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  h2 a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--gold);
+    text-decoration-thickness: 3px;
+  }
+  .lede {
+    margin: 0;
+    font: 400 1.25rem/1.45 var(--font-body);
+    color: var(--ink);
+  }
+  .meta {
+    margin: 0;
+  }
+  .cover {
+    display: block;
+    width: 100%;
+  }
+  .cover :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+</style>

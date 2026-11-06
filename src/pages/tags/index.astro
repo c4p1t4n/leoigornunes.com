@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TagChip from '../../components/TagChip.astro';
+import { getPublishedPosts, getTagCounts } from '../../lib/posts';
+
+const tags = getTagCounts(await getPublishedPosts()); // mais usadas primeiro
+---
+
+<BaseLayout title="Tags" description="Todos os temas do blog.">
+  <div class="container wrap">
+    <h1 class="page-title">Tags</h1>
+    <p class="row sort" hidden>
+      <span class="meta">Ordenar:</span>
+      <button type="button" data-sort="count" aria-pressed="true">
+        Mais usadas
+      </button>
+      <button type="button" data-sort="az" aria-pressed="false">
+        A–Z
+      </button>
+    </p>
+    <p class="row list">
+      {tags.map(([tag, count]) => (
+        <TagChip tag={tag} count={count} />
+      ))}
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  // Sem JS: lista fixa por uso. Com JS: alterna A–Z.
+  const list = document.querySelector<HTMLElement>('.list');
+  const bar = document.querySelector<HTMLElement>('.sort');
+  if (list && bar) {
+    bar.hidden = false;
+    const initial = [...list.children];
+    bar.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>(
+        'button[data-sort]',
+      );
+      if (!btn) return;
+      const az = btn.dataset.sort === 'az';
+      const items = az
+        ? [...initial].sort((a, b) =>
+            (a.textContent ?? '').localeCompare(b.textContent ?? '', 'pt-BR'),
+          )
+        : initial;
+      list.replaceChildren(...items);
+      bar
+        .querySelectorAll('button')
+        .forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+    });
+  }
+</script>
+
+<style>
+  .wrap {
+    padding-block: 0 2rem;
+  }
+  .sort {
+    margin: 0 0 1.5rem;
+  }
+  .sort button {
+    padding: 0.3em 0.8em;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: none;
+    color: var(--ink);
+    font: 500 0.8125rem var(--font-ui);
+    cursor: pointer;
+  }
+  .sort button[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .list {
+    gap: 0.6rem;
+  }
+</style>

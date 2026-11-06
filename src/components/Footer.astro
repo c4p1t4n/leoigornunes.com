@@ -1,0 +1,71 @@
+---
+import Logo from './Logo.astro';
+import { site, socialLinks } from '../config/site';
+---
+
+<footer class="footer">
+  <div class="container inner">
+    <a class="brand" href="/" aria-label={`${site.name}, página inicial`}>
+      <Logo size={36} />
+    </a>
+    <nav aria-label="Rodapé">
+      <ul>
+        <li>
+          <a href="/arquivo/">Arquivo</a>
+        </li>
+        <li>
+          <a href="/tags/">Tags</a>
+        </li>
+        <li>
+          <a href="/sobre/">Sobre</a>
+        </li>
+        {socialLinks.map((l) => (
+          <li>
+            <a href={l.href} target="_blank" rel="noopener noreferrer">
+              {l.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/rss.xml">RSS</a>
+        </li>
+      </ul>
+    </nav>
+    <p class="meta">
+      © {new Date().getFullYear()} {site.name} · feito com{' '}
+      <a href="https://astro.build" target="_blank" rel="noopener noreferrer">
+        Astro
+      </a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 4rem;
+    padding-block: 2rem;
+    border-top: 3px double var(--ink);
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+  .brand {
+    color: var(--ink);
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+  }
+  .meta {
+    margin: 0;
+  }
+</style>

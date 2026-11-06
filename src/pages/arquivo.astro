@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostListItem from '../components/PostListItem.astro';
+import { getPublishedPosts, getTagCounts, groupByMonth } from '../lib/posts';
+import { monthLabel, plural } from '../lib/format';
+import { tagLabel } from '../lib/tags';
+
+const posts = await getPublishedPosts();
+const tags = getTagCounts(posts);
+const years = groupByMonth(posts);
+---
+
+<BaseLayout title="Arquivo" description="Todos os artigos, por ano e mês.">
+  <div class="container wrap">
+    <h1 class="page-title">Arquivo</h1>
+
+    <nav class="row filter" aria-label="Filtrar por tag">
+      <a
+        class="chip is-active"
+        href="/arquivo/"
+        data-filter=""
+        aria-current="true"
+      >
+        Todos <small>{posts.length}</small>
+      </a>
+      {tags.map(([tag, n]) => (
+        <a class="chip" href={`/tags/${tag}/`} data-filter={tag}>
+          {tagLabel(tag)} <small>{n}</small>
+        </a>
+      ))}
+    </nav>
+
+    {years.map(({ year, months }) => (
+      <section class="year" data-year aria-label={String(year)}>
+        {months.map(({ month, posts }) => (
+          <div class="month" data-month>
+            <h2 class="section-label">
+              <span>{monthLabel(year, month)}</span>
+              <span class="n" data-count>
+                {plural(posts.length, 'artigo', 'artigos')}
+              </span>
+            </h2>
+            {posts.map((p) => (
+              <PostListItem post={p} />
+            ))}
+          </div>
+        ))}
+      </section>
+    ))}
+    <p class="empty" hidden>
+      Nenhum artigo com essa tag.
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  // Filtro por tag na própria página; sincroniza ?tag= na URL. Sem JS os chips são links para /tags/[tag]/.
+  const chips = document.querySelectorAll<HTMLAnchorElement>(
+    '.filter [data-filter]',
+  );
+  const items = document.querySelectorAll<HTMLElement>('.item[data-tags]');
+  const months = document.querySelectorAll<HTMLElement>('[data-month]');
+  const years = document.querySelectorAll<HTMLElement>('[data-year]');
+  const empty = document.querySelector<HTMLElement>('.empty');
+  const known = new Set([...chips].map((c) => c.dataset.filter));
+
+  function apply(tag: string) {
+    items.forEach(
+      (i) =>
+        (i.hidden = !!tag && !(i.dataset.tags ?? '').split(' ').includes(tag)),
+    );
+    months.forEach((m) => {
+      const n = [...m.querySelectorAll('.item')].filter(
+        (i) => !(i as HTMLElement).hidden,
+      ).length;
+      m.hidden = n === 0;
+      const c = m.querySelector('[data-count]');
+      if (c) c.textContent = `${n} ${n === 1 ? 'artigo' : 'artigos'}`;
+    });
+    years.forEach(
+      (y) =>
+        (y.hidden = ![...y.querySelectorAll<HTMLElement>('[data-month]')].some(
+          (m) => !m.hidden,
+        )),
+    );
+    if (empty) empty.hidden = [...years].some((y) => !y.hidden);
+    chips.forEach((c) => {
+      const on = (c.dataset.filter ?? '') === tag;
+      c.classList.toggle('is-active', on);
+      if (on) c.setAttribute('aria-current', 'true');
+      else c.removeAttribute('aria-current');
+    });
+  }
+
+  chips.forEach((c) =>
+    c.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tag = c.dataset.filter ?? '';
+      history.replaceState(
+        null,
+        '',
+        tag ? `?tag=${encodeURIComponent(tag)}` : location.pathname,
+      );
+      apply(tag);
+    }),
+  );
+  const initial = new URLSearchParams(location.search).get('tag') ?? '';
+  apply(known.has(initial) ? initial : '');
+</script>
+
+<style>
+  .wrap {
+    padding-bottom: 2rem;
+    max-width: 52rem;
+  }
+  .filter {
+    margin: 1rem 0 2rem;
+    gap: 0.5rem;
+  }
+  .month {
+    margin-bottom: 2rem;
+  }
+  .section-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .n {
+    color: var(--muted);
+    font-weight: 500;
+  }
+</style>

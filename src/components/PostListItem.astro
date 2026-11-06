@@ -1,0 +1,65 @@
+---
+// Item de lista no formato Akita: data · título · resumo · #tags
+import TagChip from './TagChip.astro';
+import { dateShort, isoDate } from '../lib/format';
+import type { Post } from '../lib/posts';
+
+const { post, level = 3 } = Astro.props as { post: Post; level?: 2 | 3 };
+const Heading = `h${level}` as 'h2' | 'h3';
+const { title, description, date, tags, draft } = post.data;
+---
+
+<article class="item" data-tags={tags.join(' ')}>
+  <time class="meta" datetime={isoDate(date)}>
+    {dateShort(date)}
+  </time>
+  <div>
+    <Heading class="title">
+      <a href={`/artigos/${post.id}/`}>{title}</a>
+      {draft && <span class="badge">Rascunho</span>}
+    </Heading>
+    <p class="desc">{description}</p>
+    <p class="row tags">
+      {tags.map((t) => (
+        <TagChip tag={t} variant="hash" />
+      ))}
+    </p>
+  </div>
+</article>
+
+<style>
+  .item {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  time {
+    padding-top: 0.45rem;
+    white-space: nowrap;
+  }
+  .title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 0 0 0.3rem;
+    font-size: var(--fs-card);
+  }
+  .title a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .title a:hover {
+    text-decoration: underline;
+  }
+  .desc {
+    margin: 0 0 0.5rem;
+    color: var(--ink);
+  }
+  .tags {
+    margin: 0;
+    gap: 0.25rem 0.75rem;
+  }
+</style>

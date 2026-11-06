@@ -1,0 +1,48 @@
+---
+// "Temas": tags mais usadas com contagem + link para todas.
+import { getTagCounts } from '../lib/posts';
+import type { Post } from '../lib/posts';
+
+const { posts, limit = 8 } = Astro.props as { posts: Post[]; limit?: number };
+const tags = getTagCounts(posts).slice(0, limit);
+---
+
+<section aria-labelledby="temas-titulo">
+  <h2 id="temas-titulo" class="section-label">
+    Temas
+  </h2>
+  <ul>
+    {tags.map(([tag, count]) => (
+      <li>
+        <a class="hashtag" href={`/tags/${tag}/`}>
+          #{tag}
+        </a>
+        <span class="meta">({count})</span>
+      </li>
+    ))}
+  </ul>
+  <a class="all" href="/tags/">
+    Todas as tags →
+  </a>
+</section>
+
+<style>
+  ul {
+    margin: 0 0 0.75rem;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    gap: 0.5rem;
+    padding-block: 0.3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .hashtag {
+    font-size: 0.9375rem;
+  }
+  .all {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+</style>

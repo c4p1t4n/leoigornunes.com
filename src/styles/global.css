@@ -1,0 +1,233 @@
+@import '@fontsource/playfair-display/latin-700.css';
+@import '@fontsource/playfair-display/latin-900.css';
+@import '@fontsource/source-serif-4/latin-400.css';
+@import '@fontsource/source-serif-4/latin-400-italic.css';
+@import '@fontsource/source-serif-4/latin-600.css';
+@import '@fontsource/source-serif-4/latin-700.css';
+@import '@fontsource/inter/latin-400.css';
+@import '@fontsource/inter/latin-500.css';
+@import '@fontsource/inter/latin-600.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1rem/1.5 var(--font-ui);
+  overflow-wrap: break-word;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+svg {
+  max-width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+a {
+  color: var(--navy);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+a:hover {
+  text-decoration-color: var(--gold);
+  text-decoration-thickness: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.container {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -4rem;
+  padding: 0.5rem 1rem;
+  background: var(--gold);
+  color: var(--on-gold);
+  font-weight: 600;
+  z-index: 10;
+}
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+/* ── Linguagem visual ─────────────────────────────── */
+
+/* Kicker: tag em caixa alta acima do título */
+.kicker {
+  display: inline-block;
+  padding-block: 0.5rem; /* alvo de toque ≥ 24px... */
+  margin-block: -0.5rem; /* ...sem alterar o espaçamento */
+  font: 600 0.75rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
+  text-decoration: none;
+}
+
+/* Metadados (data, tempo de leitura) */
+.meta {
+  font: 400 0.8125rem/1.4 var(--font-ui);
+  color: var(--muted);
+}
+
+/* #tag das listagens (estilo Akita) */
+.hashtag {
+  font: 500 0.8125rem/1 var(--font-ui);
+  color: var(--red);
+  text-decoration: none;
+}
+.hashtag:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+}
+
+/* Chip das páginas de filtro */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.35em 0.8em;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper-2);
+  color: var(--ink);
+  font: 500 0.8125rem/1 var(--font-ui);
+  text-decoration: none;
+}
+.chip:hover {
+  border-color: var(--gold);
+}
+.chip[aria-current='true'],
+.chip.is-active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--on-gold);
+}
+.chip small {
+  color: var(--muted);
+  font-size: 0.75em;
+}
+.chip.is-active small,
+.chip[aria-current='true'] small {
+  color: var(--on-gold);
+}
+
+/* Selo de rascunho (só aparece em dev) */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  background: var(--gold);
+  color: var(--on-gold);
+  font: 700 0.6875rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Filete duplo de cabeçalho de jornal: 1px ink + 3px gold */
+.rule-double {
+  border: 0;
+  border-top: 1px solid var(--ink);
+  height: 3px;
+  background: var(--gold);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ── Utilitários de layout ────────────────────────── */
+[hidden] {
+  display: none !important;
+}
+
+/* metadados em linha: separador "·" por pseudo-elemento (o compilador remove espaços entre inline) */
+.meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.6rem;
+  margin: 0;
+}
+.meta-line > * + *::before {
+  content: '·';
+  margin-right: 0.6rem;
+}
+
+/* grade 8/4 (coluna principal + lateral); empilha no mobile */
+.grid-8-4 {
+  display: grid;
+  gap: 2rem 3rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .grid-8-4 {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+/* cabeçalho de seção: filete ink + rótulo em caixa alta */
+.section-label {
+  margin: 0 0 1rem;
+  padding-top: 0.6rem;
+  border-top: 2px solid var(--ink);
+  font: 700 0.75rem/1 var(--font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  margin: 2rem 0 0.5rem;
+  font-size: var(--fs-title);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+}

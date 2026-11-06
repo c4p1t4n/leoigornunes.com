@@ -1,0 +1,20 @@
+---
+import TagCloud from './TagCloud.astro';
+import AuthorCard from './AuthorCard.astro';
+import type { Post } from '../lib/posts';
+
+const { posts } = Astro.props as { posts: Post[] };
+---
+
+<aside class="sidebar" aria-label="Lateral">
+  <TagCloud posts={posts} />
+  <AuthorCard />
+</aside>
+
+<style>
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+</style>

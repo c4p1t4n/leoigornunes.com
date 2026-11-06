@@ -1,0 +1,307 @@
+---
+// /styleguide/ — só em dev. Em produção getStaticPaths devolve [] e a página não é gerada.
+import { Image } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Logo from '../../components/Logo.astro';
+import ThemeToggle from '../../components/ThemeToggle.astro';
+import { tagLabel } from '../../lib/tags';
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { slug: undefined } }] : [];
+}
+
+const tokens = [
+  'ink',
+  'paper',
+  'paper-2',
+  'gold',
+  'red',
+  'navy',
+  'muted',
+  'rule',
+];
+const post = (await getEntry('artigos', 'artigo-com-capa'))!;
+const tabela = (await getEntry('artigos', 'sem-capa-com-tabela'))!;
+const { Content } = await render(post);
+const { Content: Tabela } = await render(tabela);
+---
+
+<BaseLayout title="Styleguide" bare>
+  <div class="container sg">
+    <header class="sg-head">
+      <Logo size={40} loading="eager" />
+      <h1>Styleguide</h1>
+      <ThemeToggle />
+    </header>
+    <p class="meta">Só em dev. Alterne o tema no botão ☀/☾ e revise os dois.</p>
+
+    <section>
+      <h2>Paleta</h2>
+      <div class="swatches">
+        {tokens.map((t) => (
+          <div class="swatch">
+            <div class="chipcolor" style={`background:var(--${t})`} />
+            <code>--{t}</code>
+          </div>
+        ))}
+      </div>
+      <h3>Texto sobre fundo</h3>
+      <div class="pairs">
+        <p style="background:var(--paper);color:var(--ink)">ink / paper</p>
+        <p style="background:var(--paper);color:var(--red)">red / paper</p>
+        <p style="background:var(--paper);color:var(--navy)">navy / paper</p>
+        <p style="background:var(--paper);color:var(--muted)">muted / paper</p>
+        <p style="background:var(--paper-2);color:var(--red)">red / paper-2</p>
+        <p style="background:var(--paper-2);color:var(--muted)">
+          muted / paper-2
+        </p>
+        <p style="background:var(--gold);color:var(--on-gold)">
+          on-gold / gold
+        </p>
+        <p style="background:var(--bar);color:var(--on-bar)">on-bar / bar</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Tipografia</h2>
+      <p class="masthead">LEO IGOR NUNES</p>
+      <p class="headline">Manchete em Playfair Display</p>
+      <p class="title">Título de artigo em Playfair</p>
+      <h2 style="margin:0">H2 de artigo</h2>
+      <p class="card-title">Título de card em Playfair</p>
+      <p class="prose" style="margin-inline:0">
+        Corpo de artigo em Source Serif 4, 19px, line-height 1.7, até 68ch de
+        largura. A <em>ênfase</em> e o <strong>destaque</strong> convivem com{' '}
+        <a href="#">links</a> e <code>código inline</code>.
+      </p>
+      <p>
+        <span class="kicker">Kicker · Inter 600 caixa alta</span>
+      </p>
+      <p class="meta">5 nov 2026 · 7 min de leitura · Metadado em Inter</p>
+      <pre style="font:400 15px var(--font-mono)">JetBrains Mono 15px — const x = 42;</pre>
+    </section>
+
+    <section>
+      <h2>Elementos</h2>
+      <p class="row">
+        <a class="kicker" href="#">
+          Tecnologia
+        </a>
+        <a class="hashtag" href="#">
+          #arquitetura
+        </a>
+        <a class="hashtag" href="#">
+          #{tagLabel('aws')}
+        </a>
+        <span class="badge">Rascunho</span>
+      </p>
+      <p class="row">
+        <a class="chip" href="#">
+          Tecnologia <small>12</small>
+        </a>
+        <a class="chip" href="#">
+          Carreira <small>8</small>
+        </a>
+        <a class="chip is-active" href="#">
+          Ativa <small>3</small>
+        </a>
+      </p>
+      <p>
+        Link comum <a href="#">com hover dourado</a>. Foco de teclado:{' '}
+        <a href="#">Tab aqui</a>.
+      </p>
+      <div class="rule-double"></div>
+    </section>
+
+    <section>
+      <h2>Cards</h2>
+      <div class="cards">
+        <article class="card">
+          {post.data.cover && (
+            <Image
+              src={post.data.cover}
+              alt={post.data.coverAlt!}
+              widths={[400, 800]}
+              sizes="(min-width: 700px) 50vw, 100vw"
+            />
+          )}
+          <span class="kicker">{tagLabel(post.data.tags[0])}</span>
+          <h3>{post.data.title}</h3>
+          <p>{post.data.description}</p>
+          <span class="meta">5 nov 2026 · 1 min</span>
+        </article>
+        <article class="card typo">
+          <span class="kicker">Economia</span>
+          <h3>Versão tipográfica: sem imagem, ainda com presença</h3>
+          <p>
+            A maioria dos artigos não terá capa; o card precisa funcionar só com
+            texto.
+          </p>
+          <span class="meta">20 out 2026 · 1 min</span>
+        </article>
+      </div>
+      <h3>Item de lista (formato Akita)</h3>
+      <article class="item">
+        <time class="meta">05 nov</time>
+        <div>
+          <h4>
+            <a href="#">{tabela.data.title}</a>
+          </h4>
+          <p>{tabela.data.description}</p>
+          <p class="row">
+            <a class="hashtag" href="#">
+              #economia
+            </a>
+            <a class="hashtag" href="#">
+              #mercado-financeiro
+            </a>
+          </p>
+        </div>
+      </article>
+    </section>
+
+    <section>
+      <h2>Prosa (artigo renderizado)</h2>
+      <div class="prose">
+        <Content />
+      </div>
+      <div class="prose">
+        <Tabela />
+      </div>
+    </section>
+
+    <section>
+      <h2>Logo</h2>
+      <p class="logos">
+        <Logo size={96} alt="Selo 96px" />
+        <Logo size={48} alt="Selo 48px" />
+        <Logo size={32} alt="Selo 32px" />
+        <img
+          src="/apple-touch-icon.png"
+          alt="Ícone 180px (apple-touch)"
+          width="90"
+          height="90"
+        />
+        <img
+          src="/og-default.png"
+          alt="Imagem OG padrão"
+          width="378"
+          height="198"
+        />
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .sg {
+    padding-block: 2rem 4rem;
+  }
+  .sg section {
+    margin-top: 3rem;
+  }
+  .sg-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .sg-head h1 {
+    margin: 0;
+    flex: 1;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+    gap: 0.75rem;
+  }
+  .chipcolor {
+    height: 3.5rem;
+    border: 1px solid var(--rule);
+  }
+  .pairs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+    gap: 0.5rem;
+  }
+  .pairs p {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--rule);
+    font-weight: 500;
+  }
+  .masthead {
+    margin: 0;
+    font: 900 clamp(1.75rem, 1rem + 4vw, 3rem) var(--font-display);
+    letter-spacing: 0.03em;
+  }
+  .headline {
+    margin: 0.5rem 0;
+    font: 900 var(--fs-headline) / 1.1 var(--font-display);
+  }
+  .title {
+    margin: 0.5rem 0;
+    font: 700 var(--fs-title) / 1.15 var(--font-display);
+  }
+  .card-title {
+    font: 700 var(--fs-card) / 1.25 var(--font-display);
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 1.5rem;
+  }
+  /* Cards de revisão; os componentes reais (HeroStory etc.) entram na Fase 3. */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .card img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .card h3 {
+    margin: 0;
+    font-size: var(--fs-card);
+  }
+  .card p {
+    margin: 0;
+  }
+  .card.typo {
+    padding: 1.25rem;
+    background: var(--paper-2);
+    border-top: 3px solid var(--ink);
+    justify-content: center;
+  }
+  .card.typo h3 {
+    font-size: calc(var(--fs-card) * 1.3);
+  }
+  .item {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-block: 1px solid var(--rule);
+  }
+  .item h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1.25rem;
+  }
+  .item p {
+    margin: 0 0 0.4rem;
+  }
+  .logos {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+</style>

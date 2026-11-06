@@ -1,0 +1,193 @@
+---
+// Artigo e páginas de texto (Sobre). Sem `date`/`kicker` → cabeçalho só com título.
+import { Image } from 'astro:assets';
+import BaseLayout from './BaseLayout.astro';
+import Toc from '../components/Toc.astro';
+import { dateLong, isoDate } from '../lib/format';
+import { tagLabel } from '../lib/tags';
+
+interface Props {
+  title: string;
+  description?: string;
+  kicker?: string;
+  date?: Date;
+  updated?: Date;
+  readingTime?: number;
+  draft?: boolean;
+  cover?: ImageMetadata;
+  coverAlt?: string;
+  headings?: { depth: number; slug: string; text: string }[];
+  tags?: string[];
+  image?: { url: string; alt: string; width: number; height: number }; // OG
+  jsonLd?: object;
+}
+const {
+  title,
+  description,
+  kicker,
+  date,
+  updated,
+  readingTime,
+  draft,
+  cover,
+  coverAlt,
+  headings = [],
+  tags,
+  image,
+  jsonLd,
+} = Astro.props;
+const toc = headings.filter((h) => h.depth <= 3);
+const showToc = headings.filter((h) => h.depth === 2).length >= 3;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  type={date ? 'article' : 'website'}
+  image={image}
+  published={date}
+  modified={updated ?? date}
+  tags={tags}
+  jsonLd={jsonLd}
+>
+  <article class="container post">
+    <header class="head">
+      {kicker && (
+        <a class="kicker" href={`/tags/${kicker}/`}>
+          {tagLabel(kicker)}
+        </a>
+      )}
+      <h1>{title}</h1>
+      {description && date && <p class="lede">{description}</p>}
+      {date && (
+        <p class="meta meta-line">
+          <time datetime={isoDate(date)}>{dateLong(date)}</time>
+          {updated && (
+            <span>
+              atualizado em{' '}
+              <time datetime={isoDate(updated)}>{dateLong(updated)}</time>
+            </span>
+          )}
+          {readingTime && <span>{readingTime} min de leitura</span>}
+          {draft && <span class="badge">Rascunho</span>}
+        </p>
+      )}
+    </header>
+
+    {cover && (
+      <figure class="cover">
+        <Image
+          src={cover}
+          alt={coverAlt ?? ''}
+          widths={[480, 800, 1100]}
+          sizes="(min-width: 900px) 900px, 100vw"
+          loading="eager"
+        />
+      </figure>
+    )}
+
+    <div class="body" class:list={{ 'with-toc': showToc }}>
+      {showToc && (
+        <aside class="toc-col">
+          <Toc headings={toc} />
+        </aside>
+      )}
+      <div class="prose">
+        <slot />
+      </div>
+    </div>
+
+    <slot name="after" />
+  </article>
+</BaseLayout>
+
+<script>
+  // Botão "copiar" nos blocos de código
+  document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.replaceWith(wrap);
+    wrap.append(pre);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copiar';
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText);
+        btn.textContent = 'Copiado';
+      } catch {
+        btn.textContent = 'Erro';
+      }
+      setTimeout(() => (btn.textContent = 'Copiar'), 1500);
+    });
+    wrap.append(btn);
+  });
+</script>
+
+<style>
+  .post {
+    padding-block: 2rem 1rem;
+  }
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+  h1 {
+    margin: 0;
+    font: 900 var(--fs-title) / 1.1 var(--font-display);
+  }
+  .lede {
+    margin: 0;
+    font: 400 1.3rem/1.45 var(--font-body);
+    color: var(--muted);
+  }
+  .meta {
+    margin: 0;
+  }
+  .cover {
+    max-width: 900px;
+    margin: 2rem auto 0;
+  }
+  .cover :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .body {
+    margin-top: 2rem;
+  }
+  /* TOC fixo à direita no desktop; no mobile aparece antes do texto */
+  .toc-col {
+    max-width: var(--measure);
+    margin: 0 auto 2rem;
+  }
+  @media (min-width: 1100px) {
+    .body.with-toc {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, var(--measure)) minmax(
+          0,
+          1fr
+        );
+      gap: 2rem;
+    }
+    .with-toc .prose {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .toc-col {
+      grid-column: 3;
+      grid-row: 1;
+      align-self: start;
+      position: sticky;
+      top: 1.5rem;
+      max-width: 15rem;
+      margin: 0;
+    }
+  }
+</style>

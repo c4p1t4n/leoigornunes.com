@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostListItem from '../../components/PostListItem.astro';
+import TagChip from '../../components/TagChip.astro';
+import { getPublishedPosts, getTagCounts } from '../../lib/posts';
+import { plural } from '../../lib/format';
+import { tagLabel } from '../../lib/tags';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  const counts = getTagCounts(posts);
+  return counts.map(([tag]) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((p) => p.data.tags.includes(tag)),
+      counts,
+    },
+  }));
+}
+
+const { tag, posts, counts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`Artigos sobre ${tagLabel(tag)}.`}>
+  <div class="container wrap">
+    <h1 class="page-title">#{tag}</h1>
+    <p class="meta count">{plural(posts.length, 'artigo', 'artigos')}</p>
+    <nav class="row others" aria-label="Outras tags">
+      {counts.map(([t, n]) => (
+        <TagChip tag={t} count={n} active={t === tag} />
+      ))}
+    </nav>
+    <section aria-label={`Artigos com a tag ${tag}`}>
+      {posts.map((p) => (
+        <PostListItem post={p} level={2} />
+      ))}
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .wrap {
+    padding-bottom: 2rem;
+    max-width: 52rem;
+  }
+  .count {
+    margin: 0 0 1.25rem;
+  }
+  .others {
+    margin-bottom: 2rem;
+    gap: 0.5rem;
+  }
+</style>

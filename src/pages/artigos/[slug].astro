@@ -1,0 +1,117 @@
+---
+import { render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import TagChip from '../../components/TagChip.astro';
+import ShareLinks from '../../components/ShareLinks.astro';
+import RelatedPosts from '../../components/RelatedPosts.astro';
+import {
+  getAdjacent,
+  getPublishedPosts,
+  getRelated,
+  kicker,
+  readingTime,
+  type Post,
+} from '../../lib/posts';
+import { ogImage, postJsonLd } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props as { post: Post };
+const { Content, headings } = await render(post);
+const posts = await getPublishedPosts();
+const { newer, older } = getAdjacent(post, posts);
+const related = getRelated(post, posts);
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const image = await ogImage(post);
+const { title, description, date, updated, tags, cover, coverAlt, draft } =
+  post.data;
+---
+
+<PostLayout
+  title={title}
+  description={description}
+  kicker={kicker(post)}
+  date={date}
+  updated={updated}
+  readingTime={readingTime(post)}
+  draft={draft}
+  cover={cover}
+  coverAlt={coverAlt}
+  headings={headings}
+  tags={tags}
+  image={image}
+  jsonLd={postJsonLd(post, image)}
+>
+  <Content />
+
+  <footer slot="after" class="after">
+    <div class="row tags">
+      {tags.map((t) => (
+        <TagChip tag={t} />
+      ))}
+    </div>
+    <ShareLinks url={url} title={title} />
+    <nav class="adjacent" aria-label="Outros artigos">
+      {older ? (
+        <a href={`/artigos/${older.id}/`} rel="prev">
+          <span class="meta">← Anterior</span>
+          <span class="t">{older.data.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {newer ? (
+        <a class="next" href={`/artigos/${newer.id}/`} rel="next">
+          <span class="meta">Próximo →</span>
+          <span class="t">{newer.data.title}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+    <RelatedPosts posts={related} />
+  </footer>
+</PostLayout>
+
+<style>
+  .after {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+  .tags {
+    margin: 0;
+  }
+  .adjacent {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  }
+  .adjacent a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .adjacent .t {
+    font: 700 1.125rem/1.3 var(--font-display);
+  }
+  .adjacent a:hover .t {
+    text-decoration: underline;
+  }
+  .next {
+    text-align: right;
+  }
+  @media (max-width: 699px) {
+    .next {
+      text-align: left;
+    }
+  }
+</style>

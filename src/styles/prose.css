@@ -1,0 +1,144 @@
+/* Corpo de artigo: <div class="prose"> */
+.prose {
+  max-width: var(--measure);
+  margin-inline: auto;
+  font: 400 1.1875rem/1.7 var(--font-body); /* 19px */
+}
+
+.prose > * + * {
+  margin-top: 1.25em;
+}
+
+.prose h2 {
+  font-size: var(--fs-h2);
+  margin-top: 2em;
+}
+.prose h3 {
+  font-size: 1.25rem;
+  margin-top: 1.75em;
+}
+.prose :is(h2, h3, h4) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.prose a {
+  text-decoration-thickness: 1px;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose blockquote {
+  margin-inline: 0;
+  padding-left: 1.25em;
+  border-left: 3px solid var(--gold);
+  color: var(--muted);
+  font-style: italic;
+}
+
+.prose hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin-block: 2.5em;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+.prose li > input[type='checkbox'] {
+  margin-right: 0.5em;
+}
+
+.prose img {
+  display: block;
+  border-radius: 2px;
+}
+
+/* Código inline */
+.prose :not(pre) > code {
+  padding: 0.15em 0.35em;
+  background: var(--paper-2);
+  border-radius: 3px;
+  font: 400 0.8em var(--font-mono);
+}
+
+/* Blocos (Shiki, tema duplo: --shiki-light / --shiki-dark) */
+.prose pre {
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  font: 400 0.9375rem/1.6 var(--font-mono); /* 15px */
+  tab-size: 2;
+}
+.prose pre.astro-code,
+.prose pre.astro-code span {
+  color: light-dark(var(--shiki-light), var(--shiki-dark));
+}
+
+/* Tabelas: rolam na horizontal em vez de estourar a página */
+.prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font: 400 0.9375rem/1.4 var(--font-ui);
+}
+.prose th,
+.prose td {
+  padding: 0.55em 0.9em;
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+.prose th {
+  border-bottom: 2px solid var(--ink);
+  text-align: left;
+  font-weight: 600;
+}
+
+/* Notas de rodapé */
+.prose section[data-footnotes] {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid var(--rule);
+  font-size: 0.9375rem;
+}
+
+/* Âncora de título (plugin autolinkHeadings) */
+.prose .anchor::after {
+  content: '#';
+}
+.prose .anchor {
+  margin-left: 0.35em;
+  color: var(--muted);
+  text-decoration: none;
+  opacity: 0;
+}
+.prose :is(h2, h3):hover .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+/* Botão "copiar" dos blocos de código (injetado por PostLayout) */
+.prose .code-wrap {
+  position: relative;
+}
+.prose .copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.3em 0.7em;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 500 0.75rem/1 var(--font-ui);
+  cursor: pointer;
+}

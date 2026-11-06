@@ -1,0 +1,15 @@
+---
+import { getEntry, render } from 'astro:content';
+import PostLayout from '../layouts/PostLayout.astro';
+
+const page = (await getEntry('paginas', 'sobre'))!;
+const { Content, headings } = await render(page);
+---
+
+<PostLayout
+  title={page.data.title}
+  description={page.data.description}
+  headings={headings}
+>
+  <Content />
+</PostLayout>

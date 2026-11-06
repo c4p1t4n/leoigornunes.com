@@ -1,0 +1,44 @@
+---
+// Sumário lateral (h2/h3). A página decide quando mostrar (3+ H2).
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+const { headings } = Astro.props as { headings: Heading[] };
+---
+
+<nav class="toc" aria-label="Neste artigo">
+  <p class="section-label">Neste artigo</p>
+  <ol>
+    {headings.map((h) => (
+      <li class:list={{ sub: h.depth === 3 }}>
+        <a href={`#${h.slug}`}>{h.text}</a>
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+  li {
+    padding-block: 0.3rem;
+  }
+  li.sub {
+    padding-left: 1rem;
+  }
+  a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--navy);
+    text-decoration: underline;
+  }
+</style>

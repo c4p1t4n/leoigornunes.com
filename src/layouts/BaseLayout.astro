@@ -1,0 +1,156 @@
+---
+import '../styles/global.css';
+import '../styles/prose.css';
+import TopBar from '../components/TopBar.astro';
+import Masthead from '../components/Masthead.astro';
+import NavTags from '../components/NavTags.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../config/site';
+import playfair700 from '@fontsource/playfair-display/files/playfair-display-latin-700-normal.woff2?url';
+import playfair900 from '@fontsource/playfair-display/files/playfair-display-latin-900-normal.woff2?url';
+import inter400 from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
+import inter500 from '@fontsource/inter/files/inter-latin-500-normal.woff2?url';
+import inter600 from '@fontsource/inter/files/inter-latin-600-normal.woff2?url';
+import serif400 from '@fontsource/source-serif-4/files/source-serif-4-latin-400-normal.woff2?url';
+
+// Fontes usadas acima da dobra: preload evita a troca tardia (layout shift)
+const preloadFonts = [
+  playfair700,
+  playfair900,
+  inter400,
+  inter500,
+  inter600,
+  serif400,
+];
+
+interface Props {
+  title: string;
+  description?: string;
+  bare?: boolean; // sem topo/rodapé (styleguide)
+  type?: 'website' | 'article';
+  image?: { url: string; alt: string; width: number; height: number }; // OG; padrão: og-default.png
+  published?: Date;
+  modified?: Date;
+  tags?: string[];
+  jsonLd?: object;
+  noindex?: boolean;
+}
+const {
+  title,
+  description = site.tagline,
+  bare = false,
+  type = 'website',
+  image,
+  published,
+  modified,
+  tags = [],
+  jsonLd,
+  noindex = false,
+} = Astro.props;
+const fullTitle = title === site.name ? title : `${title} · ${site.name}`;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const og = image ?? {
+  url: '/og-default.png',
+  alt: `${site.name}: corvo de chapéu de palha sobre livros`,
+  width: 1200,
+  height: 630,
+};
+const ogUrl = new URL(og.url, site.url).href;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? (
+      <meta name="robots" content="noindex" />
+    ) : (
+      <link rel="canonical" href={canonical} />
+    )}
+    {preloadFonts.map((href) => (
+      <link rel="preload" as="font" type="font/woff2" href={href} crossorigin />
+    ))}
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#F5EFE3"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#111014"
+    />
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content={String(og.width)} />
+    <meta property="og:image:height" content={String(og.height)} />
+    <meta property="og:image:alt" content={og.alt} />
+    {type === 'article' && published && (
+      <meta
+        property="article:published_time"
+        content={published.toISOString()}
+      />
+    )}
+    {type === 'article' && modified && (
+      <meta property="article:modified_time" content={modified.toISOString()} />
+    )}
+    {type === 'article' && (
+      <meta property="article:author" content={site.author.name} />
+    )}
+    {type === 'article' &&
+      tags.map((t) => <meta property="article:tag" content={t} />)}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogUrl} />
+    <meta name="twitter:image:alt" content={og.alt} />
+
+    {jsonLd && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}
+      />
+    )}
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={site.name}
+      href="/rss.xml"
+    />
+    <!-- Aplica o tema salvo antes de pintar (sem flash). -->
+    <script is:inline>
+      try {
+        var t = localStorage.getItem('theme');
+        if (t) document.documentElement.dataset.theme = t;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">
+      Pular para o conteúdo
+    </a>
+    {!bare && (
+      <>
+        <TopBar />
+        <Masthead />
+        <NavTags />
+      </>
+    )}
+    <main id="conteudo">
+      <slot />
+    </main>
+    {!bare && <Footer />}
+  </body>
+</html>

@@ -1,0 +1,60 @@
+---
+// Só links (sem SDKs). "Copiar link" é JS: fica escondido até o script rodar.
+const { url, title } = Astro.props as { url: string; title: string };
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+---
+
+<p class="row share">
+  <span class="meta">Compartilhar:</span>
+  <a
+    href={`https://www.linkedin.com/sharing/share-offsite/?url=${u}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    LinkedIn
+  </a>
+  <a
+    href={`https://x.com/intent/post?url=${u}&text=${t}`}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    X
+  </a>
+  <button type="button" class="copy-link" data-url={url} hidden>
+    Copiar link
+  </button>
+</p>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>('.copy-link');
+  if (btn) {
+    btn.hidden = false;
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.url ?? location.href);
+        btn.textContent = 'Link copiado';
+      } catch {
+        btn.textContent = 'Não foi possível copiar';
+      }
+      setTimeout(() => (btn.textContent = 'Copiar link'), 1500);
+    });
+  }
+</script>
+
+<style>
+  .share {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  .copy-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--navy);
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+</style>

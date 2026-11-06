@@ -1,0 +1,28 @@
+---
+import { tagLabel } from '../lib/tags';
+
+interface Props {
+  tag: string;
+  count?: number;
+  variant?: 'chip' | 'hash';
+  active?: boolean;
+}
+const { tag, count, variant = 'chip', active = false } = Astro.props;
+const href = `/tags/${tag}/`;
+---
+
+{variant === 'hash' ? (
+  <a class="hashtag" href={href}>
+    #{tag}
+  </a>
+) : (
+  <a
+    class:list={['chip', { 'is-active': active }]}
+    href={href}
+    aria-current={active ? 'true' : undefined}
+    data-tag={tag}
+  >
+    {tagLabel(tag)}
+    {count !== undefined && <small>{count}</small>}
+  </a>
+)}

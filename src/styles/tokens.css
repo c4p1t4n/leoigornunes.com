@@ -1,0 +1,40 @@
+/* Tokens: light-dark(claro, escuro). O tema segue o sistema, a não ser que
+   <html data-theme="light|dark"> force (toggle manual). */
+:root {
+  color-scheme: light dark;
+
+  --ink: light-dark(#111014, #ede6d8); /* texto */
+  --paper: light-dark(#f5efe3, #111014); /* fundo */
+  --paper-2: light-dark(#ece4d3, #1c1a20); /* cards, código inline, hover */
+  --gold: #e3b23c; /* só preenchimentos/detalhes no claro; texto só no escuro */
+  --red: light-dark(#a3201a, #e2574c); /* kickers, tags */
+  --navy: light-dark(#1b2a47, #8fb4e8); /* links, botões */
+  --muted: light-dark(#5e574c, #a39c8e); /* metadados */
+  --rule: light-dark(#d8cdb8, #2c2a31); /* divisórias */
+
+  /* Constantes (iguais nos dois temas) */
+  --on-gold: #111014;
+  --bar: #111014; /* barra superior */
+  --on-bar: #f5efe3;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-ui: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --fs-headline: clamp(2.25rem, 1.6rem + 2.8vw, 3.5rem);
+  --fs-title: clamp(2rem, 1.5rem + 2vw, 3rem);
+  --fs-h2: clamp(1.5rem, 1.3rem + 0.9vw, 1.875rem);
+  --fs-card: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+
+  --measure: 68ch;
+  --maxw: 1200px;
+  --gutter: 1rem;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

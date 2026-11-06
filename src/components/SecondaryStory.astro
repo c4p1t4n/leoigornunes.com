@@ -1,0 +1,77 @@
+---
+// Secundária da home: kicker + título (+ miniatura quando há capa).
+import { Image } from 'astro:assets';
+import { dateShort, isoDate } from '../lib/format';
+import { kicker, type Post } from '../lib/posts';
+import { tagLabel } from '../lib/tags';
+
+const { post } = Astro.props as { post: Post };
+const { title, date, cover, coverAlt, draft } = post.data;
+---
+
+<article class="story">
+  <div class="text">
+    <a class="kicker" href={`/tags/${kicker(post)}/`}>
+      {tagLabel(kicker(post))}
+    </a>
+    <h3>
+      <a href={`/artigos/${post.id}/`}>{title}</a>
+    </h3>
+    <p class="meta meta-line">
+      <time datetime={isoDate(date)}>{dateShort(date)}</time>
+      {draft && <span class="badge">Rascunho</span>}
+    </p>
+  </div>
+  {cover && (
+    <Image
+      src={cover}
+      alt={coverAlt ?? ''}
+      width={192}
+      height={144}
+      densities={[1, 2]}
+      class="thumb"
+    />
+  )}
+</article>
+
+<style>
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .story:first-child {
+    padding-top: 0;
+  }
+  .story:last-child {
+    border-bottom: 0;
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  h3 {
+    margin: 0;
+    font-size: var(--fs-card);
+    line-height: 1.25;
+  }
+  h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  h3 a:hover {
+    text-decoration: underline;
+  }
+  .meta {
+    margin: 0;
+  }
+  .story :global(.thumb) {
+    width: 96px;
+    height: 72px;
+    object-fit: cover;
+  }
+</style>

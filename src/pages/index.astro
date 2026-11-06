@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroStory from '../components/HeroStory.astro';
+import SecondaryStory from '../components/SecondaryStory.astro';
+import PostListItem from '../components/PostListItem.astro';
+import Sidebar from '../components/Sidebar.astro';
+import { homeJsonLd } from '../lib/seo';
+import { site } from '../config/site';
+import { getHeadline, getPublishedPosts } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+const headline = getHeadline(posts);
+const rest = posts.filter((p) => p !== headline);
+const secondary = rest.slice(0, 3); // as 3 mais recentes depois da manchete
+const latest = rest.slice(3, 3 + site.postsPerHome);
+---
+
+<BaseLayout title={site.name} description={site.tagline} jsonLd={homeJsonLd()}>
+  <div class="container home">
+    <h1 class="visually-hidden">{site.name}: artigos</h1>
+
+    {headline ? (
+      <section class="top grid-8-4" aria-label="Destaques">
+        <HeroStory post={headline} />
+        <div class="secondary">
+          {secondary.map((p) => (
+            <SecondaryStory post={p} />
+          ))}
+        </div>
+      </section>
+    ) : (
+      <p class="empty">Ainda não há artigos publicados.</p>
+    )}
+
+    <div class="grid-8-4 bottom">
+      <section aria-labelledby="ultimos">
+        {latest.length > 0 && (
+          <>
+            <h2 id="ultimos" class="section-label">
+              Últimos artigos
+            </h2>
+            {latest.map((p) => (
+              <PostListItem post={p} />
+            ))}
+            <p class="more">
+              <a href="/arquivo/">Ver todos no arquivo →</a>
+            </p>
+          </>
+        )}
+      </section>
+      <Sidebar posts={posts} />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .home {
+    padding-block: 2rem 0;
+  }
+  .top {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .bottom {
+    padding-top: 2rem;
+  }
+  @media (min-width: 900px) {
+    .secondary {
+      padding-left: 2rem;
+      border-left: 1px solid var(--rule);
+    }
+  }
+  .more {
+    margin: 1rem 0 0;
+    font-weight: 500;
+  }
+  .empty {
+    padding-block: 4rem;
+    text-align: center;
+  }
+</style>

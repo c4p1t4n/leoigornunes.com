@@ -1,0 +1,33 @@
+---
+// Selo do site (src/assets/logo.png, gerado por `npm run brand` a partir de design/logo-original.png).
+// O Astro gera as versões otimizadas (1x/2x). `alt` vazio = decorativo (use dentro de link com aria-label).
+import { Image } from 'astro:assets';
+import logo from '../assets/logo.png';
+
+const {
+  size = 32,
+  alt = '',
+  loading = 'lazy',
+} = Astro.props as {
+  size?: number;
+  alt?: string;
+  loading?: 'eager' | 'lazy';
+};
+---
+
+<Image
+  src={logo}
+  width={size}
+  height={size}
+  densities={[1, 2]}
+  alt={alt}
+  loading={loading}
+  class="logo"
+/>
+
+<style>
+  .logo {
+    display: block;
+    flex: none;
+  }
+</style>

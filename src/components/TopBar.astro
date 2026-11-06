@@ -1,0 +1,55 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import { socialLinks } from '../config/site';
+---
+
+<div class="topbar">
+  <div class="container inner">
+    <nav aria-label="Links externos">
+      <ul>
+        {socialLinks.map((l) => (
+          <li>
+            <a href={l.href} target="_blank" rel="noopener noreferrer">
+              {l.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/rss.xml">RSS</a>
+        </li>
+      </ul>
+    </nav>
+    <ThemeToggle />
+  </div>
+</div>
+
+<style>
+  .topbar {
+    background: var(--bar);
+    color: var(--on-bar);
+    font: 500 0.75rem/1 var(--font-ui);
+    letter-spacing: 0.04em;
+  }
+  .inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 2.25rem;
+  }
+  ul {
+    display: flex;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  a {
+    color: var(--on-bar);
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--gold);
+    text-decoration-thickness: 2px;
+  }
+</style>

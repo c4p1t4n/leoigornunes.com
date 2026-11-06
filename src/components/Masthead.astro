@@ -1,0 +1,50 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../config/site';
+---
+
+<header class="masthead container">
+  <a class="brand" href="/" aria-label={`${site.name}, página inicial`}>
+    <Logo size={104} loading="eager" />
+    <span class="name">{site.name.toUpperCase()}</span>
+  </a>
+  <p class="tagline">{site.tagline}</p>
+</header>
+<hr class="rule-double" />
+
+<style>
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding-block: 1.25rem 1rem;
+    text-align: center;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .brand :global(.logo) {
+    width: 72px;
+    height: 72px;
+  }
+  @media (min-width: 700px) {
+    .brand :global(.logo) {
+      width: 104px;
+      height: 104px;
+    }
+  }
+  .name {
+    font: 900 clamp(1.6rem, 1rem + 3.2vw, 3rem) / 1 var(--font-display);
+    letter-spacing: 0.04em;
+  }
+  .tagline {
+    margin: 0;
+    color: var(--muted);
+    font: italic 400 1rem var(--font-body);
+  }
+</style>
