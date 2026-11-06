@@ -16,6 +16,35 @@ const { data, info } = await sharp(SRC)
   .raw()
   .toBuffer({ resolveWithObject: true });
 const { width: W, height: H } = info;
+// Máscara "tem conteúdo": o fundo do quadrado é ~3/255 por canal contra ~0 fora (ruído). Amplifica a
+// soma R+G+B e tira a média numa janela (imagem integral) → 255 = dentro do quadrado/desenho, 0 = fora.
+// (feito em JS: o blur do sharp se mostrou instável nessa faixa de valores)
+const R = 6;
+const S = new Uint32Array((W + 1) * (H + 1));
+for (let y = 0; y < H; y++)
+  for (let x = 0; x < W; x++) {
+    const i = (y * W + x) * 4;
+    const v = Math.min(255, (data[i] + data[i + 1] + data[i + 2]) * 40);
+    S[(y + 1) * (W + 1) + x + 1] =
+      v +
+      S[y * (W + 1) + x + 1] +
+      S[(y + 1) * (W + 1) + x] -
+      S[y * (W + 1) + x];
+  }
+const mask = new Uint8Array(W * H);
+for (let y = 0; y < H; y++)
+  for (let x = 0; x < W; x++) {
+    const x0 = Math.max(0, x - R),
+      x1 = Math.min(W, x + R + 1);
+    const y0 = Math.max(0, y - R),
+      y1 = Math.min(H, y + R + 1);
+    const sum =
+      S[y1 * (W + 1) + x1] -
+      S[y0 * (W + 1) + x1] -
+      S[y1 * (W + 1) + x0] +
+      S[y0 * (W + 1) + x0];
+    mask[y * W + x] = sum / ((x1 - x0) * (y1 - y0)) >= 100 ? 255 : 0;
+  }
 const out = Buffer.from(data);
 const seen = new Uint8Array(W * H);
 const stack = [0];
@@ -23,9 +52,8 @@ while (stack.length) {
   const i = stack.pop();
   if (seen[i]) continue;
   seen[i] = 1;
-  const o = i * 4;
-  if (data[o] > 3 || data[o + 1] > 3 || data[o + 2] > 3) continue;
-  out[o + 3] = 0;
+  if (mask[i]) continue;
+  out[i * 4 + 3] = 0;
   const x = i % W,
     y = (i / W) | 0;
   if (x > 0) stack.push(i - 1);
@@ -128,7 +156,7 @@ for (const g of font.stringToGlyphs('LEO IGOR NUNES')) {
 }
 const textW = x - 5;
 const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-<rect width="1200" height="630" fill="rgb(7,7,7)"/>
+<rect width="1200" height="630" fill="rgb(3,1,2)"/>
 <g transform="translate(480 330)" fill="${PAPER}"><path d="${d}"/></g>
 <rect x="480" y="372" width="${r(textW)}" height="8" fill="${GOLD}"/>
 <rect y="610" width="1200" height="20" fill="${GOLD}"/></svg>`;
