@@ -23,6 +23,6 @@ Our protagonist, Luffy, has a dream to become the greatest pirate of all time an
 
 ---
 
-## Notas do autor
+## Notes
 
 <!-- escreva aqui -->
