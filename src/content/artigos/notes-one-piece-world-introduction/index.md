@@ -20,3 +20,9 @@ The greatest pirate of all, Gold D. Roger, was executed by the Marines, and on t
 ![Gold D. Roger](./gold-d-roger.jpg)
 
 Our protagonist, Luffy, has a dream to become the greatest pirate of all time and find the One Piece. The first part of the manga is about recruiting the crew and heading to the Grand Line, where the strongest pirates are, all with the same ambition: to become what Gold D. Roger once was, the greatest.
+
+---
+
+## Notas do autor
+
+<!-- escreva aqui -->
