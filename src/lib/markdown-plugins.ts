@@ -16,7 +16,7 @@ export const autolinkHeadings = () => {
     element: {
       filter: ['h2', 'h3'],
       visit(node: Node, ctx: Ctx) {
-        const id = slugger.slug(ctx.textContent(node));
+        const id = slugger.slug(ctx.textContent(node).trim()); // trim: ícone antes do texto deixa espaço inicial
         ctx.setProperty(node, 'id', id); // o plugin nativo reaproveita um id já existente
         ctx.appendChild(node, {
           type: 'element',

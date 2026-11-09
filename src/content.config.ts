@@ -26,6 +26,7 @@ const artigos = defineCollection({
         coverAlt: z.string().optional(),
         featured: z.boolean().default(false),
         draft: z.boolean().default(false),
+        sketch: z.boolean().default(false), // desenhos preto no branco: inverte no tema escuro
         slug: z.string().optional(),
       })
       .refine((d) => !d.cover || !!d.coverAlt, {

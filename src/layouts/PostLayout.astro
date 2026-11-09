@@ -20,6 +20,7 @@ interface Props {
   tags?: string[];
   image?: { url: string; alt: string; width: number; height: number }; // OG
   jsonLd?: object;
+  sketch?: boolean;
 }
 const {
   title,
@@ -35,6 +36,7 @@ const {
   tags,
   image,
   jsonLd,
+  sketch = false,
 } = Astro.props;
 const toc = headings.filter((h) => h.depth <= 3);
 const showToc = headings.filter((h) => h.depth === 2).length >= 3;
@@ -92,7 +94,7 @@ const showToc = headings.filter((h) => h.depth === 2).length >= 3;
           <Toc headings={toc} />
         </aside>
       )}
-      <div class="prose">
+      <div class="prose" data-sketch={sketch || undefined}>
         <slot />
       </div>
     </div>
