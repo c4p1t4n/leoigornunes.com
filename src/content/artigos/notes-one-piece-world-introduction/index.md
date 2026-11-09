@@ -2,7 +2,7 @@
 title: "One Piece: an introduction to the world"
 date: 2026-11-07
 lang: en
-description: "A short introduction to the world of One Piece: the four seas, the Red Line, the Navy, the pirates and the legend of Gold D. Roger."
+description: "Notas de One Piece"
 tags: [ingles, notas, learning]
 cover: ./mapa.jpg
 coverAlt: "Map of the One Piece world showing the four seas, the Red Line and the Grand Line"
