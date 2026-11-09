@@ -3,6 +3,8 @@ title: "Notas sobre 1984 pt 2-3"
 date: 2020-07-02
 description: "Notas das partes 2 e 3"
 tags: [livros, notas, "1984", george-orwell]
+cover: ./ultima-liberdade.png
+coverAlt: 'Silhueta de chapéu diante da porta 101, com um papel «2+2=4» rasgado no chão e um homem e uma mulher de perfil'
 ---
 
 ## Parte 2
@@ -31,7 +33,7 @@ A parte 3 se demonstra a mais assustadora, desumana e desesperançosa. Winston s
 
 Privados de comida, água e até noção de tempo, visto que as luzes da cela ficam sempre acesas, os prisioneiros agem como animais em busca dos recursos para sobreviver, ou até mesmo morrer para fuga das torturas feitas pelo Estado.
 
-![Porta 101 do Ministério do Amor, com um papel «2+2=4» rasgado no chão e a silhueta de um homem de chapéu sob o olho do Partido](./ministerio-do-amor.png)
+![Cela do Ministério do Amor: prisioneiros abatidos sob luzes sempre acesas, uma tele-tela com um olho e a porta 101](./ministerio-do-amor.png)
 
 ## Notas do autor
 
